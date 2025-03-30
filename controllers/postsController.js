@@ -2,13 +2,57 @@ const posts = require('../data/posts.js');
 
 //index
 function index(req, res) {
-    res.send(posts);
+    let filterPosts = posts;
+    let filterPostsIndex;
+    if (req.query.tags) {
+        filterPostsIndex = posts.findIndex(post => post.tags.includes(req.query.tags));
+
+        if (filterPostsIndex < 0) {
+            res.status(404);
+            res.json({
+                status: 404,
+                error: "Not Found",
+                message: "Dolce non trovato"
+            });
+            return;
+        } else {
+            filterPosts = posts.filter(post => post.tags.includes(req.query.tags));
+            res.json(filterPosts);
+        }
+    } else {
+        res.json(filterPosts);
+    }
+
 }
 
 //show
 function show(req, res) {
+    let tags = req.query.tags;
     let id = parseInt(req.params.id);
-    res.send(posts.find(post => post['id'] === id));
+    // console.log(tags);
+    let post = posts.find(post => id === post.id);
+
+    console.log(post);
+    if (!post) {
+        res.status(404);
+        res.json({
+            status: 404,
+            error: "Not Found",
+            message: "ID dolce non trovato"
+        });
+    } else {
+        if(post.tags.includes(tags)){
+            res.json(post);
+        }else{
+            res.status(404);
+            res.json({
+                status: 404,
+                error: "Not Found",
+                message: "Tags del dolce non trovato"
+            });
+        }
+    }
+
 }
 
 //store
@@ -29,26 +73,34 @@ function modify(req, res) {
 
 //destroy
 function destroy(req, res) {
+    let tags = req.query.tags;
     let id = parseInt(req.params.id);
-
-    const dolceIndex = posts.findIndex(post => id === post.id);
-
-    if (dolceIndex < 0) {
-
+    // console.log(tags);
+    let post = posts.find(post => id === post.id);
+    let postIndex = posts.findIndex(post => id === post.id);
+    console.log(postIndex);
+    console.log(post);
+    if (!post) {
         res.status(404);
-
-        return res.json({
+        res.json({
             status: 404,
             error: "Not Found",
-            message: "Dolce non trovato"
+            message: "ID dolce non trovato"
         });
-
     } else {
-        posts.splice(dolceIndex, 1);
-        console.log(posts);
-        res.status(204);
-
+        if(post.tags.includes(tags)){
+            res.json(post);
+        }else{
+            posts.splice(postIndex, 1);
+            res.status(404);
+            res.json({
+                status: 404,
+                error: "Not Found",
+                message: "Tags del dolce non trovato, Post eliminato!"
+            });
+        }
     }
+    
 }
 
 
