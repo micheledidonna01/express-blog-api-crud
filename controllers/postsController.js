@@ -86,14 +86,16 @@ function update(req, res) {
             error: "Not Found",
             message: "ID dolce non trovato"
         }
+    }else{
+
+        post.title = req.body.title;
+        post.content = req.body.content;
+        post.image = req.body.image;
+        post.tags = req.body.tags;
+        
+        res.status(200);
+        res.json(post);
     }
-
-    post.title = req.body.title;
-    post.content = req.body.content;
-    post.image = req.body.image;
-    post.tags = req.body.tags;
-
-    res.json(post);
 }
 
 
