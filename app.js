@@ -3,6 +3,8 @@ const app = express();
 let port = 3002;
 const posts = require('./data/posts.js');
 
+app.use(express.json());
+
 //router
 const postsRouter = require('./routers/postsRouter.js');
 

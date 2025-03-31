@@ -57,12 +57,43 @@ function show(req, res) {
 
 //store
 function store(req, res) {
-    res.send(`E' stato aggiunto un nuovo dolce`);
+    const newId = posts[posts.length - 1].id + 1;
+
+    const newPost = {
+        id: newId,
+        title: req.body.title ,
+        content: req.body.content ,  
+        image: req.body.image ,
+        tags: req.body.tags
+    }
+
+    posts.push(newPost);
+    
+    res.status(201);
+    res.json(newPost);
+    console.log(req.body);
 }
 
 //update
 function update(req, res) {
-    res.send(`Modifica integrale del dolce ${req.params.id}`);
+    let id = parseInt(req.params.id);
+    let post = posts.find(post => id === post.id);
+    if(!post){
+        res.status(404);
+
+        return {
+            status: 404,
+            error: "Not Found",
+            message: "ID dolce non trovato"
+        }
+    }
+
+    post.title = req.body.title;
+    post.content = req.body.content;
+    post.image = req.body.image;
+    post.tags = req.body.tags;
+
+    res.json(post);
 }
 
 
@@ -78,8 +109,8 @@ function destroy(req, res) {
     // console.log(tags);
     let post = posts.find(post => id === post.id);
     let postIndex = posts.findIndex(post => id === post.id);
-    console.log(postIndex);
-    console.log(post);
+    // console.log(postIndex);
+    // console.log(post);
     if (!post) {
         res.status(404);
         res.json({
@@ -89,15 +120,22 @@ function destroy(req, res) {
         });
     } else {
         if(post.tags.includes(tags)){
-            res.json(post);
-        }else{
             posts.splice(postIndex, 1);
+            console.log(`Post con ID ${post.id} è stato eliminato!`);
+            
+            return res.status(204).json({
+                status: 204,
+                error: "Eliminato post",
+                message: "Tags del dolce trovato, post eliminato!"
+            });
+        }else{
             res.status(404);
             res.json({
                 status: 404,
                 error: "Not Found",
-                message: "Tags del dolce non trovato, Post eliminato!"
+                message: "Tags del dolce non trovato!"
             });
+
         }
     }
     
