@@ -2,6 +2,7 @@ const posts = require('../data/posts.js');
 
 //index
 function index(req, res) {
+    // pippo.get();
     let filterPosts = posts;
     let filterPostsIndex;
     if (req.query.tags) {
